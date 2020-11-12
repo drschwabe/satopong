@@ -1,5 +1,18 @@
 const no = require('nodejs-html')
 
-no.makeIndex( null, no.html( null, null, 'client.bundle.js')  ) 
+let html = `
+<html>
+<body>
+  <script src="phaser.js"></script>
+	<script src="client.bundle.js"></script>
+</body>
+</html>
+`
+
+no.makeIndex( null, html  ) 
 
 no.watch()
+
+no.server() 
+
+no.static() 
