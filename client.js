@@ -14,7 +14,7 @@ $('body').prepend(`
   <p id="scoreTwo" style="position:absolute; right: 10%;"></p>
 </div>`)
 
-import levelScene from "./levelScene.js";
+import levelScene from "./classes/levelScene.js";
 
 const config = {
   type: Phaser.AUTO,
