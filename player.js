@@ -1,32 +1,28 @@
+// ### player ###
+
+let player
+let scene
+
 export default class Player {
-  constructor(scene, x, y) {
-    this.scene = scene;
+  constructor(levelScene, x, y) {
+    player = this
+    scene = levelScene
 
     // Add sprite
-    this.paddle = scene.playerGroup.create(x, y, "pong").setScale(0.025).setOrigin(0.7, 0.7).setImmovable();
-    this.paddle.setCollideWorldBounds(true);
-    this.paddle.type = 'Left';
-
+    player.paddle = scene.playerGroup.create(x, y, "pong").setScale(0.025).setOrigin(0.7, 0.7).setImmovable()
+    player.paddle.setCollideWorldBounds(true)
+    player.paddle.type = 'Left'
   }
 
-
   update() {
-    
-    const scene = this.scene;
-    const paddle = this.paddle;
-
     // keyboard controls
     if (scene.cursors.up.isDown) {
-      paddle.setVelocityY(-15);     
+      player.paddle.setVelocityY(-15)    
+    } else if (scene.cursors.down.isDown) {     
+      player.paddle.setVelocityY(15)
+    } else {       
+      player.paddle.setVelocityY(0)
     }
-    else if (scene.cursors.down.isDown) {     
-      paddle.setVelocityY(15);
-    }
-    else {       
-      paddle.setVelocityY(0);
-        
-    }
- 
   }
 
 }

@@ -1,37 +1,33 @@
+// ### ai ###
+let ai
+let scene
+
 export default class AI {
-  constructor(scene, x, y) {
-      this.scene = scene;
-  
-      // Add sprite
-      this.paddle = scene.playerGroup.create(x, y, "pong").setScale(0.025).setOrigin(2, 0.5).setImmovable();
-      this.paddle.setCollideWorldBounds(true);
-      this.paddle.type = 'Right';
+  constructor(levelScene, x, y) {
+    ai = this
+    scene = levelScene
 
+    // Add sprite
+    ai.paddle = scene.playerGroup.create(x, y, "pong").setScale(0.025).setOrigin(2, 0.5).setImmovable()
+    ai.paddle.setCollideWorldBounds(true)
+    ai.paddle.type = 'Right'
   }
-
 
   update(ball) {
-    
-      const paddle = this.paddle;
-
-      // Super basic AI
-      // when the ball is not in the middle waiting for the player to press space
-      // the paddle will follow the ball once it's near the halfway point.
-      // when the ball is in the middle and waiting (after a point gain) then move the paddle back to the middle of the y axis
-      if (!ball.getData('inMiddle')) {
+    // Super basic AI
+    // when the ball is not in the middle waiting for the player to press space
+    // the paddle will follow the ball once it's near the halfway point.
+    // when the ball is in the middle and waiting (after a point gain) then move the paddle back to the middle of the y axis
+    if (!ball.getData('inMiddle')) {
       if(ball.x > Phaser.Math.Between(7, 9)) {
-          if(ball.y > paddle.y) {
-              paddle.setVelocityY(7);
-          }
-          else if(ball.y < paddle.y) {
-              paddle.setVelocityY(-7);
-          }
+        if(ball.y > ai.paddle.y) {
+          ai.paddle.setVelocityY(7)
+        } else if(ball.y < ai.paddle.y) {
+          ai.paddle.setVelocityY(-7)
+        }
       }
-      }
-      else {
-          paddle.y = 5;
-      }
-  
+    } else {
+      ai.paddle.y = 5
+    }
   }
-
 }
