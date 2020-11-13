@@ -4,128 +4,136 @@ import AI from "./ai.js";
 /**
  * level Scene
  */
+
+let scene = null 
+
 export default class levelScene extends Phaser.Scene {
+
   constructor() {
-    super({ key: 'levelScene' });
+    super({ key: 'levelScene' })
   }
 
   preload() {
-    this.load.image("ball", "assets/ball2.png");
-    this.load.image("pong", "assets/pong.png");
 
-    this.load.audio('left', [
+    scene = this
+
+    scene.load.image("ball", "assets/ball.svg")
+    scene.load.image("pong", "assets/pong.png")
+
+    scene.load.audio('left', [
         'assets/left.wav'
     ]);
-    this.load.audio('right', [
+    scene.load.audio('right', [
         'assets/right.wav'
     ]);
-    this.load.audio('wall', [
+    scene.load.audio('wall', [
         'assets/wall.wav'
     ]);
-    // this file is corrupt or something: 
-    // this.load.audio('goal', [
-    //     'assets/goal.wav'
-    // ]);
+    scene.load.audio('goal', [
+        'assets/goal.wav'
+    ]);
 
   }
 
   create() {
 
     // set world bounds
-    this.physics.world.setBounds(0, 0, 18, 10, true, true, true, true);
+    scene.physics.world.setBounds(0, 0, 18, 10, true, true, true, true);
 
     // camera
-    this.cam = this.cameras.main;
-    this.cam.flash();
+    scene.cam = scene.cameras.main;
+    scene.cam.flash();
 
     // add line down the middle
-    let graphics = this.add.graphics({ lineStyle: { width: 0.5, color: 0xffffff } });
+    let graphics = scene.add.graphics({ lineStyle: { width: 0.5, color: 0xffffff } });
     let line = new Phaser.Geom.Line(9, 0, 9, 10);
     graphics.strokeLineShape(line);
 
     // add sounds for ball when hitting walls or paddles
-    this.leftAudio = this.sound.add('left');
-    this.rightAudio = this.sound.add('right');
-    this.wallAudio = this.sound.add('wall');
-    //this.goalAudio = this.sound.add('goal');
+    scene.leftAudio = scene.sound.add('left');
+    scene.rightAudio = scene.sound.add('right');
+    scene.wallAudio = scene.sound.add('wall');
+    scene.goalAudio = this.sound.add('goal');
 
     // create inputs
-    this.cursors = this.input.keyboard.createCursorKeys();
+    scene.cursors = scene.input.keyboard.createCursorKeys();
     
     // create player group for player and ai
-    this.playerGroup = this.physics.add.group();
+    scene.playerGroup = scene.physics.add.group();
     // Add ball Group
-    this.ballGroup = this.physics.add.group({
+    scene.ballGroup = scene.physics.add.group({
       bounceX: 1,
       bounceY: 1,
       collideWorldBounds: true,
     });
 
     // create player
-    this.player = new Player(this, 2, 5);
-    this.playerScore = 0;
-    document.querySelector('#scoreOne').innerHTML = this.playerScore;
+    scene.player = new Player(scene, 1, 5);
+    scene.playerScore = 0;
+    document.querySelector('#scoreOne').innerHTML = scene.playerScore;
 
     //create ai
-    this.ai = new AI(this, 16, 5);
-    this.aiScore = 0;
-    document.querySelector('#scoreTwo').innerHTML = this.aiScore;
+    scene.ai = new AI(scene, 17, 5);
+    scene.aiScore = 0;
+    document.querySelector('#scoreTwo').innerHTML = scene.aiScore;
 
 
     // create the ball
-    this.ball = this.ballGroup.create(9, 5, "ball").setOrigin(0.5, 0.5);
-    this.ball.setScale(0.02, 0.02);
-    this.ball.setMaxVelocity(5);
-    this.ball.setMass(1);
-    this.ball.setCircle(38);
-    this.ball.body.onWorldBounds = true;
-    this.ball.type = 'ball';
-    this.ball.setData('inMiddle', true);
+    scene.ball = scene.ballGroup.create(9, 5, "ball").setOrigin(0.5, 0.5);
+    scene.ball.setScale(0.02, 0.02);
+    scene.ball.setMaxVelocity(5);
+    scene.ball.setMass(1);
+    scene.ball.setCircle(38);
+    scene.ball.body.onWorldBounds = true;
+    scene.ball.type = 'ball';
+    scene.ball.setData('inMiddle', true);
 
     // Space key to start the game and to continue when a player scores
-    this.input.keyboard.on('keydown_SPACE', function (event) {
-      if (this.ball.getData('inMiddle')) {
-    
-      this.ball.setActive(true);
-      // 'randomly' choose which way the ball goes
-      if(Math.random() > 0.49) {
-        this.ball.setVelocity(-20, Phaser.Math.Between(-1, -4));
-      }
-      else {
-        this.ball.setVelocity(20, Phaser.Math.Between(1, 4));
-      }
-      this.ball.setData('inMiddle', false);
+    scene.input.keyboard.on('keydown_SPACE', function (event) {
+      if (scene.ball.getData('inMiddle')) {
 
-    }
+        scene.ball.setActive(true);
+        // 'randomly' choose which way the ball goes
+        if(Math.random() > 0.49) {
+          scene.ball.setVelocity(-20, Phaser.Math.Between(-1, -4));
+        } else {
+          scene.ball.setVelocity(20, Phaser.Math.Between(1, 4));
+        } 
+        scene.ball.setData('inMiddle', false);
+      }
 
-    }, this);
+    })
 
     // if ball hits world bounds, play wall sound
-    this.physics.world.on('worldbounds', function(body){
+    scene.physics.world.on('worldbounds', function(body){
         if(body.gameObject.type === 'ball') {
-            this.wallAudio.play();
+          scene.wallAudio.play();
         } 
-    },this);
+    });
 
-    this.physics.add.collider(this.ball, this.playerGroup, this.hitPaddle, null, this);
+    scene.physics.add.collider(scene.ball, scene.playerGroup, scene.hitPaddle, null, scene);
 
   }
 
   update(time, delta) {
-    this.player.update();
-    this.ai.update(this.ball);
+    scene.player.update();
+    scene.ai.update(scene.ball);
 
     // if ball goes out on left side (player)
-    if (this.ball.x < 1) {
-        this.aiScore += 1;
-        document.querySelector('#scoreTwo').innerHTML = this.aiScore;
-        this.resetBall();
+    if (scene.ball.x < 1) {
+        scene.aiScore += 1;
+        document.querySelector('#scoreTwo').innerHTML = scene.aiScore;
+        setTimeout( () => {
+          scene.resetBall();
+        }, 100) 
     }
     // ball goes out on right side (ai)
-    if (this.ball.x > 17) {
-        this.playerScore += 1;
-        document.querySelector('#scoreOne').innerHTML = this.playerScore;
-        this.resetBall();
+    if (scene.ball.x > 17) {
+        scene.playerScore += 1;
+        document.querySelector('#scoreOne').innerHTML = scene.playerScore;
+        setTimeout( () => {
+          scene.resetBall();
+        }, 100) 
     }
   }
 
@@ -134,10 +142,9 @@ export default class levelScene extends Phaser.Scene {
     let diff = 0;
 
     if(paddle.type === 'Left') {
-        this.leftAudio.play();
-    }
-    else if(paddle.type === 'Right') {
-        this.rightAudio.play();
+      scene.rightAudio.play();
+    } else if(paddle.type === 'Right') {
+      scene.leftAudio.play();
     }
 
     // above
@@ -146,34 +153,27 @@ export default class levelScene extends Phaser.Scene {
         diff = ball.y - paddle.y;
         ball.setVelocityY(12 * diff);
 
-    }
-    // below
-    else if (ball.y > paddle.y) {
+    } else if (ball.y > paddle.y) { 
         // ball is on the right-hand side of the paddle
         diff = paddle.y + ball.y;
         ball.setVelocityY(12 * diff);
-
-   
-    }
-    // middle
-    else {
+    } else { // middle
         // ball is perfectly in the middle
         ball.setVelocityY(2 + Math.random() * 10);
-
     }
-}
+  }
 
-resetBall() {
+  resetBall() {
     // goal!
-    //this.goalAudio.play();
+    this.goalAudio.play();
     //this.cam.shake(100, 0.01);
 
     // set ball back to starting position
-    this.ball.setActive(false);
-    this.ball.setVelocity(0);
-    this.ball.setPosition(9, 5);
-    this.ball.setData('inMiddle', true);
-    this.player.paddle.y = 5;
-}
+    scene.ball.setActive(false);
+    scene.ball.setVelocity(0);
+    scene.ball.setPosition(9, 5);
+    scene.ball.setData('inMiddle', true);
+    scene.player.paddle.y = 5;
+  }
 
 }

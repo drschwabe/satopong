@@ -62,7 +62,7 @@ p {
 `)
 
 $('body').prepend(`
-<div id="gameCanvas">
+<div id="gameCanvas" style="width: 360; height: 200; border : solid 1px gray;">
   <p id="scoreOne"></p>
   <p id="scoreTwo"></p>
 </div>
@@ -73,7 +73,6 @@ import levelScene from "./levelScene.js";
 
 const config = {
     type: Phaser.AUTO,
-    parent: 'gameCanvas',
     transparent: true,
     resolution: 2,
     pixelArt: true,
@@ -87,7 +86,7 @@ const config = {
     scale: {
       mode: Phaser.Scale.NONE,
       autoCenter: Phaser.Scale.CENTER_BOTH,
-      parent: "parent", // See [HTML] and [CSS]
+      parent: "gameCanvas", // See [HTML] and [CSS]
       width: 18,
       height: 10,
       zoom: Phaser.Scale.MAX_ZOOM // -1
