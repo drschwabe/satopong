@@ -2,11 +2,6 @@ const $ = require('jquery')
 
 $('head').append(`
 <style>
-  canvas {
-    border: 0.5px solid;
-    border-color: rgba(255, 255, 255, 0.87);
-    border-radius: 1px;
-  }
 
   #gameCanvas {
     margin: auto;
@@ -14,12 +9,12 @@ $('head').append(`
 
   #scoreOne {
     position: absolute;
-    left: 47%;
+    left: 10%;
 }
 
 #scoreTwo {
     position: absolute;
-    right: 47%;
+    right: 10%;
 }
 
 * {
@@ -79,16 +74,23 @@ import levelScene from "./levelScene.js";
 const config = {
     type: Phaser.AUTO,
     parent: 'gameCanvas',
-    width: 18,
-    height: 10,
     transparent: true,
     resolution: 2,
+    pixelArt: true,
     physics: {
         default: "arcade",
         arcade: {
             //debug: true,
             gravity: { x: 0, y: 0 }
         }
+    },
+    scale: {
+      mode: Phaser.Scale.NONE,
+      autoCenter: Phaser.Scale.CENTER_BOTH,
+      parent: "parent", // See [HTML] and [CSS]
+      width: 18,
+      height: 10,
+      zoom: Phaser.Scale.MAX_ZOOM // -1
     },
     scene: levelScene
 };

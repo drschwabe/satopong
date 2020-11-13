@@ -3,7 +3,7 @@ export default class Player {
     this.scene = scene;
 
     // Add sprite
-    this.paddle = scene.playerGroup.create(x, y, "pong").setScale(0.025).setOrigin(0.5, 0.5).setImmovable();
+    this.paddle = scene.playerGroup.create(x, y, "pong").setScale(0.025).setOrigin(0.7, 0.7).setImmovable();
     this.paddle.setCollideWorldBounds(true);
     this.paddle.type = 'Left';
 

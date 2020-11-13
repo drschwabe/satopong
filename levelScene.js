@@ -71,27 +71,16 @@ export default class levelScene extends Phaser.Scene {
     this.aiScore = 0;
     document.querySelector('#scoreTwo').innerHTML = this.aiScore;
 
-    //particles to follow the ball
-    this.particles = this.add.particles('ball');
-
-    this.emitter = this.particles.createEmitter({
-        speed: 10,
-        scale: { start: 0.008, end: 0 },
-        lifespan: 350,
-        blendMode: 'SCREEN'
-    });
 
     // create the ball
     this.ball = this.ballGroup.create(9, 5, "ball").setOrigin(0.5, 0.5);
     this.ball.setScale(0.02, 0.02);
-    this.ball.setMaxVelocity(15);
+    this.ball.setMaxVelocity(5);
     this.ball.setMass(1);
     this.ball.setCircle(38);
     this.ball.body.onWorldBounds = true;
     this.ball.type = 'ball';
     this.ball.setData('inMiddle', true);
-    // particle emitter follow ball
-    this.emitter.startFollow(this.ball);
 
     // Space key to start the game and to continue when a player scores
     this.input.keyboard.on('keydown_SPACE', function (event) {
@@ -177,7 +166,7 @@ export default class levelScene extends Phaser.Scene {
 resetBall() {
     // goal!
     //this.goalAudio.play();
-    this.cam.shake(100, 0.01);
+    //this.cam.shake(100, 0.01);
 
     // set ball back to starting position
     this.ball.setActive(false);
