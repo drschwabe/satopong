@@ -23,7 +23,7 @@ export default class levelScene extends Phaser.Scene {
 
   create() {
     // set world bounds
-    scene.physics.world.setBounds(0, 0, 18, 10, true, true, true, true)
+    scene.physics.world.setBounds(0, 0, pong.width, pong.height, true, true, true, true)
 
     // camera
     scene.cam = scene.cameras.main
@@ -31,7 +31,7 @@ export default class levelScene extends Phaser.Scene {
 
     // add line down the middle
     let graphics = scene.add.graphics({ lineStyle: { width: 0.5, color: 0xffffff } })
-    let line = new Phaser.Geom.Line(9, 0, 9, 10)
+    let line = new Phaser.Geom.Line(pong.width/2, 0, pong.width/2, pong.height)
     graphics.strokeLineShape(line)
 
     // add sounds for ball when hitting walls or paddles
@@ -53,21 +53,21 @@ export default class levelScene extends Phaser.Scene {
     })
 
     // create player
-    scene.player = new Player(scene, 1, 5)
+    scene.player = new Player(scene, 1, pong.height/2)
     scene.playerScore = 0
     document.querySelector('#scoreOne').innerHTML = scene.playerScore
 
     //create ai
-    scene.ai = new AI(scene, 17, 5)
+    scene.ai = new AI(scene, pong.width -1, pong.height/2)
     scene.aiScore = 0
     document.querySelector('#scoreTwo').innerHTML = scene.aiScore
 
     // create the ball
-    scene.ball = scene.ballGroup.create(9, 5, 'ball').setOrigin(0.5, 0.5)
+    scene.ball = scene.ballGroup.create(pong.width/2, pong.height/2, 'ball').setOrigin(0.5, 0.5)
     scene.ball.setScale(0.02, 0.02)
     scene.ball.setMaxVelocity(5)
     scene.ball.setMass(1)
-    scene.ball.setCircle(38)
+    scene.ball.setCircle(38) //< change? 
     scene.ball.body.onWorldBounds = true
     scene.ball.type = 'ball'
     scene.ball.setData('inMiddle', true)
@@ -105,7 +105,7 @@ export default class levelScene extends Phaser.Scene {
       setTimeout(scene.resetBall, 100) 
     }
     //ball goes out on right side (ai)
-    if (scene.ball.x > 17) {
+    if (scene.ball.x > pong.width - 1) {
       scene.playerScore += 1
       document.querySelector('#scoreOne').innerHTML = scene.playerScore
       setTimeout(scene.resetBall, 100) 
@@ -143,9 +143,9 @@ export default class levelScene extends Phaser.Scene {
     //set ball back to starting position
     scene.ball.setActive(false)
     scene.ball.setVelocity(0)
-    scene.ball.setPosition(9, 5)
+    scene.ball.setPosition(pong.width/2, pong.height/2)
     scene.ball.setData('inMiddle', true)
-    scene.player.paddle.y = 5
+    scene.player.paddle.y = pong.height/2
   }
 
 }

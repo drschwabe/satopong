@@ -19,7 +19,7 @@ export default class AI {
     // the paddle will follow the ball once it's near the halfway point.
     // when the ball is in the middle and waiting (after a point gain) then move the paddle back to the middle of the y axis
     if (!ball.getData('inMiddle')) {
-      if(ball.x > Phaser.Math.Between(7, 9)) {
+      if(ball.x > Phaser.Math.Between( (pong.height/2) -2, pong.height/2) ) {
         if(ball.y > ai.paddle.y) {
           ai.paddle.setVelocityY(7)
         } else if(ball.y < ai.paddle.y) {
@@ -27,7 +27,7 @@ export default class AI {
         }
       }
     } else {
-      ai.paddle.y = 5
+      ai.paddle.y = pong.height/2
     }
   }
 }
