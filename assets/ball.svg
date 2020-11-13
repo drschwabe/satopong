@@ -7,9 +7,9 @@
    xmlns="http://www.w3.org/2000/svg"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   width="22.489584mm"
-   height="22.489584mm"
-   viewBox="0 0 22.489584 22.489584"
+   width="0.52916664mm"
+   height="0.52916664mm"
+   viewBox="0 0 0.52916664 0.52916664"
    version="1.1"
    id="svg8"
    inkscape:version="1.0 (3c411ce, 2020-09-06)"
@@ -25,15 +25,15 @@
      inkscape:pageshadow="2"
      inkscape:zoom="3.959798"
      inkscape:cx="52.219767"
-     inkscape:cy="66.699043"
+     inkscape:cy="-9.5510919"
      inkscape:document-units="mm"
      inkscape:current-layer="layer1"
      inkscape:document-rotation="0"
      showgrid="false"
      inkscape:window-width="1427"
      inkscape:window-height="1113"
-     inkscape:window-x="417"
-     inkscape:window-y="54"
+     inkscape:window-x="381"
+     inkscape:window-y="184"
      inkscape:window-maximized="0" />
   <metadata
      id="metadata5">
@@ -51,13 +51,13 @@
      inkscape:label="Layer 1"
      inkscape:groupmode="layer"
      id="layer1"
-     transform="translate(114.85436,173.0627)">
+     transform="translate(114.85436,152.88818)">
     <rect
-       style="fill:#fe4558;stroke-width:5.82615"
+       style="fill:#fe4558;stroke-width:0.137086"
        id="rect847"
-       width="22.489584"
-       height="22.489584"
+       width="0.52916664"
+       height="0.52916664"
        x="-114.85436"
-       y="-173.0627" />
+       y="-152.88818" />
   </g>
 </svg>

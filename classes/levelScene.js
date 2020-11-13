@@ -2,7 +2,7 @@ import Player from "./player.js"
 import AI from "./ai.js"
 
 // ### level Scene ###
-let scene = null 
+let scene 
 
 export default class levelScene extends Phaser.Scene {
 
@@ -58,16 +58,16 @@ export default class levelScene extends Phaser.Scene {
     document.querySelector('#scoreOne').innerHTML = scene.playerScore
 
     //create ai
-    scene.ai = new AI(scene, pong.width -1, pong.height/2)
+    scene.ai = new AI(scene, pong.width, pong.height/2)
     scene.aiScore = 0
     document.querySelector('#scoreTwo').innerHTML = scene.aiScore
 
     // create the ball
     scene.ball = scene.ballGroup.create(pong.width/2, pong.height/2, 'ball').setOrigin(0.5, 0.5)
-    scene.ball.setScale(0.02, 0.02)
-    scene.ball.setMaxVelocity(5)
+    scene.ball.setScale(1)
+    scene.ball.setMaxVelocity(pong.ballVelocity)
     scene.ball.setMass(1)
-    scene.ball.setCircle(38) //< change? 
+    scene.ball.setCircle(1) //< change? 
     scene.ball.body.onWorldBounds = true
     scene.ball.type = 'ball'
     scene.ball.setData('inMiddle', true)
@@ -99,13 +99,13 @@ export default class levelScene extends Phaser.Scene {
     scene.ai.update(scene.ball)
 
     //if ball goes out on left side (player)
-    if(scene.ball.x < 1) {
+    if(scene.ball.x === 1) {
       scene.aiScore += 1
       document.querySelector('#scoreTwo').innerHTML = scene.aiScore
       setTimeout(scene.resetBall, 100) 
     }
     //ball goes out on right side (ai)
-    if (scene.ball.x > pong.width - 1) {
+    if (scene.ball.x === pong.width -1) {
       scene.playerScore += 1
       document.querySelector('#scoreOne').innerHTML = scene.playerScore
       setTimeout(scene.resetBall, 100) 

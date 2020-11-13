@@ -16,7 +16,12 @@ $('body').prepend(`
 
 import levelScene from "./classes/levelScene.js";
 
-const config = {
+global.pong = {
+  width : 36,
+  height : 20,
+  ballVelocity : 15
+}
+pong.phaserConfig = {
   type: Phaser.AUTO,
   transparent: true,
   resolution: 1,
@@ -24,7 +29,7 @@ const config = {
   physics: {
     default: "arcade",
     arcade: {
-      //debug: true,
+      debug: false,
       gravity: { x: 0, y: 0 }
     }
   },
@@ -32,11 +37,11 @@ const config = {
     mode: Phaser.Scale.NONE,
     autoCenter: Phaser.Scale.CENTER_BOTH,
     parent: "gameCanvas",
-    width: 18,
-    height: 10,
+    width: pong.width,
+    height: pong.height,
     zoom: Phaser.Scale.MAX_ZOOM 
   },
   scene: levelScene
 }
 
-const game = new Phaser.Game(config)
+pong.phaser = new Phaser.Game(pong.phaserConfig)
