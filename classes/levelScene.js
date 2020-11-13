@@ -1,8 +1,22 @@
 import Player from "./player.js"
 import AI from "./ai.js"
 
+const _ = require('underscore')
+
 // ### level Scene ###
 let scene 
+
+let roundOver = winner => {
+  let scoreName = winner + 'Score'
+  setTimeout(() => {
+    scene[scoreName] += 1 
+    document.querySelector('#' + scoreName).innerHTML = scene[scoreName]
+    scene.resetBall() 
+  }, 500) 
+}
+
+let roundOverThrottled = _.throttle(roundOver, 1000, {trailing: false})
+
 
 export default class levelScene extends Phaser.Scene {
 
@@ -23,7 +37,7 @@ export default class levelScene extends Phaser.Scene {
 
   create() {
     // set world bounds
-    scene.physics.world.setBounds(0, 0, pong.width, pong.height, true, true, true, true)
+    scene.physics.world.setBounds(0, 0, pong.width, pong.height, false, false, true, true)
 
     // camera
     scene.cam = scene.cameras.main
@@ -55,12 +69,12 @@ export default class levelScene extends Phaser.Scene {
     // create player
     scene.player = new Player(scene, 1, pong.height/2)
     scene.playerScore = 0
-    document.querySelector('#scoreOne').innerHTML = scene.playerScore
+    document.querySelector('#playerScore').innerHTML = scene.playerScore
 
     //create ai
     scene.ai = new AI(scene, pong.width, pong.height/2)
     scene.aiScore = 0
-    document.querySelector('#scoreTwo').innerHTML = scene.aiScore
+    document.querySelector('#aiScore').innerHTML = scene.aiScore
 
     // create the ball
     scene.ball = scene.ballGroup.create(pong.width/2, pong.height/2, 'ball').setOrigin(0.5, 0.5)
@@ -99,17 +113,9 @@ export default class levelScene extends Phaser.Scene {
     scene.ai.update(scene.ball)
 
     //if ball goes out on left side (player)
-    if(scene.ball.x === 1) {
-      scene.aiScore += 1
-      document.querySelector('#scoreTwo').innerHTML = scene.aiScore
-      setTimeout(scene.resetBall, 100) 
-    }
+    if(scene.ball.x < 1) return roundOverThrottled('ai')
     //ball goes out on right side (ai)
-    if (scene.ball.x === pong.width -1) {
-      scene.playerScore += 1
-      document.querySelector('#scoreOne').innerHTML = scene.playerScore
-      setTimeout(scene.resetBall, 100) 
-    }
+    if(scene.ball.x > pong.width -1) return roundOverThrottled('player')
   }
 
   hitPaddle(ball, paddle) {

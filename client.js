@@ -10,8 +10,8 @@ $('body').prepend(`
      style="width: 360; height: 200; 
             border : solid 1px gray; margin: auto; 
             color: #fa0; font-size: 4em;">
-  <p id="scoreOne" style="position:absolute; left: 10%;"></p>
-  <p id="scoreTwo" style="position:absolute; right: 10%;"></p>
+  <p id="playerScore" style="position:absolute; left: 10%;"></p>
+  <p id="aiScore" style="position:absolute; right: 10%;"></p>
 </div>`)
 
 import levelScene from "./classes/levelScene.js";

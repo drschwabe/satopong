@@ -8,7 +8,7 @@ export default class AI {
     scene = levelScene
 
     // Add sprite
-    ai.paddle = scene.playerGroup.create(x, y, "pong").setScale(0.025).setOrigin(0.5).setImmovable()
+    ai.paddle = scene.playerGroup.create(x, y, "pong").setScale(0.025).setOrigin(1).setImmovable()
     ai.paddle.setCollideWorldBounds(true)
     ai.paddle.type = 'Right'
   }
