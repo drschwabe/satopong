@@ -12,7 +12,7 @@ body.innerHTML = `
   <p id="aiScore" style="position:absolute; right: 10%;"></p>
 </div>`
 
-const levelScene = require("./classes/levelScene.js")
+const level = require("./classes/level.js")
 
 global.pong = {
   width : 36,
@@ -39,7 +39,7 @@ pong.phaserConfig = {
     height: pong.height,
     zoom: Phaser.Scale.MAX_ZOOM 
   },
-  scene: levelScene
+  scene: level
 }
 
 pong.Phaser = new Phaser.Game(pong.phaserConfig)
