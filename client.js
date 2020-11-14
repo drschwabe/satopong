@@ -1,18 +1,16 @@
 //### PONG - game client ### 
 
-const $ = require('jquery')
-
 let body = document.getElementsByTagName('body')[0]
-body.setAttribute("style", "background-color: #282828; height: 100%;  display: grid;");
 
-$('body').prepend(`
+body.setAttribute("style", "background-color: #282828; height: 100%;  display: grid;")
+body.innerHTML = `
 <div id="gameCanvas" 
      style="width: 360; height: 200; 
             border : solid 1px gray; margin: auto; 
             color: #fa0; font-size: 4em;">
   <p id="playerScore" style="position:absolute; left: 10%;"></p>
   <p id="aiScore" style="position:absolute; right: 10%;"></p>
-</div>`)
+</div>`
 
 import levelScene from "./classes/levelScene.js";
 
