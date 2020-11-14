@@ -1,5 +1,5 @@
 const Player = require("./player.js")
-import AI from "./ai.js"
+const AI = require("./ai.js")
 
 const _ = require('underscore')
 
@@ -72,7 +72,7 @@ export default class levelScene extends Phaser.Scene {
     document.querySelector('#playerScore').innerHTML = scene.playerScore
 
     //create ai
-    scene.ai = new AI(scene, pong.width, pong.height/2)
+    scene.ai = AI.init(scene, pong.width, pong.height/2)
     scene.aiScore = 0
     document.querySelector('#aiScore').innerHTML = scene.aiScore
 
