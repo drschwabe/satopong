@@ -1,11 +1,11 @@
 // ### ai ###
-let scene
-let ai = {}
+let ai = {
+  score : 0
+}
 
-ai.init = (levelScene, x, y) => {
-  scene = levelScene
+ai.init = (x, y) => {
   // Add sprite
-  ai.paddle = scene.playerGroup.create(x, y, "pong").setScale(0.025).setOrigin(1).setImmovable()
+  ai.paddle = pong.playerGroup.create(x, y, "pong").setScale(0.025).setOrigin(1).setImmovable()
   ai.paddle.setCollideWorldBounds(true)
   ai.paddle.type = 'Right'
   return ai

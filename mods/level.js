@@ -6,12 +6,55 @@ const _ = require('underscore')
 // ### level Scene ###
 let scene
 let level = {}
+let ball
+let ai 
+let player
+let leftAudio
+let rightAudio
+let wallAudio
+let goalAudio
+
+const hitPaddle = (ball, paddle) => {
+  let diff = 0
+
+  if(paddle.type === 'Left') {
+    rightAudio.play()
+  } else if(paddle.type === 'Right') {
+    leftAudio.play()
+  }
+
+  // above
+  if (ball.y < paddle.y) {
+    // ball is on the left-hand side of the paddle
+    diff = ball.y - paddle.y
+    ball.setVelocityY(12 * diff)
+  } else if (ball.y > paddle.y) { 
+    // ball is on the right-hand side of the paddle
+    diff = paddle.y + ball.y
+    ball.setVelocityY(12 * diff)
+  } else { // middle
+    // ball is perfectly in the middle
+    ball.setVelocityY(2 + Math.random() * 10)
+  }
+}
+
+const resetBall =() => {
+  goalAudio.play() // goal!
+  setTimeout(() => scene.cam.shake(100, 0.01) ) 
+
+  //set ball back to starting position
+  ball.setActive(false)
+  ball.setVelocity(0)
+  ball.setPosition(pong.width/2, pong.height/2)
+  ball.setData('inMiddle', true)
+  player.paddle.y = pong.height/2
+}
 
 let roundOver = winner => {
-  let scoreName = winner + 'Score'
+  let scoreId = '#' + (winner === ai ? 'aiScore' : 'playerScore')
   setTimeout(() => {
-    scene[scoreName] += 1 
-    document.querySelector('#' + scoreName).innerHTML = scene[scoreName]
+    winner.score += 1 
+    document.querySelector(scoreId).innerHTML = winner.score
     resetBall() 
   }, 500) 
 }
@@ -43,109 +86,71 @@ level.create = () => {
   graphics.strokeLineShape(line)
 
   // add sounds for ball when hitting walls or paddles
-  scene.leftAudio = scene.sound.add('left')
-  scene.rightAudio = scene.sound.add('right')
-  scene.wallAudio = scene.sound.add('wall')
-  scene.goalAudio = scene.sound.add('goal')
+  leftAudio = scene.sound.add('left')
+  rightAudio = scene.sound.add('right')
+  wallAudio = scene.sound.add('wall')
+  goalAudio = scene.sound.add('goal')
 
   // create inputs
-  scene.cursors = scene.input.keyboard.createCursorKeys()
+  pong.cursors = scene.input.keyboard.createCursorKeys()
   
   // create player group for player and ai
-  scene.playerGroup = scene.physics.add.group()
+  pong.playerGroup = scene.physics.add.group()
   // Add ball Group
-  scene.ballGroup = scene.physics.add.group({
+  pong.ballGroup = scene.physics.add.group({
     bounceX: 1,
     bounceY: 1,
     collideWorldBounds: true
   })
 
   // create player
-  scene.player = Player.init(scene, 1, pong.height/2)
-  scene.playerScore = 0
-  document.querySelector('#playerScore').innerHTML = scene.playerScore
+  player = Player.init(1, pong.height/2)
+  document.querySelector('#playerScore').innerHTML = player.score
 
   //create ai
-  scene.ai = AI.init(scene, pong.width, pong.height/2)
-  scene.aiScore = 0
-  document.querySelector('#aiScore').innerHTML = scene.aiScore
+  ai = AI.init(pong.width, pong.height/2)
+  document.querySelector('#aiScore').innerHTML = ai.score
 
   // create the ball
-  scene.ball = scene.ballGroup.create(pong.width/2, pong.height/2, 'ball').setOrigin(0.5, 0.5)
-  scene.ball.setScale(1)
-  scene.ball.setMaxVelocity(pong.ballVelocity)
-  scene.ball.setMass(1)
-  scene.ball.setCircle(1) //< change? 
-  scene.ball.body.onWorldBounds = true
-  scene.ball.type = 'ball'
-  scene.ball.setData('inMiddle', true)
+  ball = pong.ballGroup.create(pong.width/2, pong.height/2, 'ball').setOrigin(0.5, 0.5)
+  ball.setScale(1)
+  ball.setMaxVelocity(pong.ballVelocity)
+  ball.setMass(1)
+  ball.setCircle(1) //< change? 
+  ball.body.onWorldBounds = true
+  ball.type = 'ball'
+  ball.setData('inMiddle', true)
 
   // Space key to start the game and to continue when a player scores
   scene.input.keyboard.on('keydown_SPACE', event => {
-    if (scene.ball.getData('inMiddle')) {
-      scene.ball.setActive(true)
+    if (ball.getData('inMiddle')) {
+      ball.setActive(true)
       // 'randomly' choose which way the ball goes
       if(Math.random() > 0.49) {
-        scene.ball.setVelocity(-20, Phaser.Math.Between(-1, -4))
+        ball.setVelocity(-20, Phaser.Math.Between(-1, -4))
       } else {
-        scene.ball.setVelocity(20, Phaser.Math.Between(1, 4))
+        ball.setVelocity(20, Phaser.Math.Between(1, 4))
       } 
-      scene.ball.setData('inMiddle', false)
+      ball.setData('inMiddle', false)
     }
   })
 
   // if ball hits world bounds, play wall sound
   scene.physics.world.on('worldbounds', body => {
-    if(body.gameObject.type === 'ball') scene.wallAudio.play()
+    if(body.gameObject.type === 'ball') wallAudio.play()
   })
 
-  scene.physics.add.collider(scene.ball, scene.playerGroup, hitPaddle, null, scene)
+  scene.physics.add.collider(ball, pong.playerGroup, hitPaddle, null, scene)
 }
 
 level.update = (time, delta) => {
-  scene.player.update()
-  scene.ai.update(scene.ball)
+  player.update()
+  ai.update(ball)
 
   //if ball goes out on left side (player)
-  if(scene.ball.x < 1) return roundOverThrottled('ai')
+  if(ball.x < 1) return roundOverThrottled(ai)
   //ball goes out on right side (ai)
-  if(scene.ball.x > pong.width -1) return roundOverThrottled('player')
-}
-
-const hitPaddle = (ball, paddle) => {
-  let diff = 0
-
-  if(paddle.type === 'Left') {
-    scene.rightAudio.play()
-  } else if(paddle.type === 'Right') {
-    scene.leftAudio.play()
-  }
-
-  // above
-  if (ball.y < paddle.y) {
-    // ball is on the left-hand side of the paddle
-    diff = ball.y - paddle.y
-    ball.setVelocityY(12 * diff)
-  } else if (ball.y > paddle.y) { 
-    // ball is on the right-hand side of the paddle
-    diff = paddle.y + ball.y
-    ball.setVelocityY(12 * diff)
-  } else { // middle
-    // ball is perfectly in the middle
-    ball.setVelocityY(2 + Math.random() * 10)
-  }
-}
-
-const resetBall =() => {
-  scene.goalAudio.play() // goal!
-  setTimeout(() => scene.cam.shake(100, 0.01) ) 
-
-  //set ball back to starting position
-  scene.ball.setActive(false)
-  scene.ball.setVelocity(0)
-  scene.ball.setPosition(pong.width/2, pong.height/2)
-  scene.ball.setData('inMiddle', true)
-  scene.player.paddle.y = pong.height/2
+  if(ball.x > pong.width -1) return roundOverThrottled(player)
 }
 
 
