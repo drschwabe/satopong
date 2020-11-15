@@ -1,22 +1,18 @@
-# Miniature Pong
+# satopong
 
-Classic pong made miniature. 
+WIP pong based on [miniaturepong]
 
-Game Width: 18px  
-Game Height: 10px
+### build/run
 
-### Play
-
-[https://retrovx.github.io/miniaturepong](https://retrovx.github.io/miniaturepong/)
-
-### Install
+```bash
+git clone https://github.com/drschwabe/satopong.git
+cd satopong
+npm install
+node serve-watch.js
+# > satopong served at http://localhost:8000 
+# also watching client.js for changes
 
 ```
-git clone https://github.com/RetroVX/miniaturepong.git
-```
-Or download from Zip
-
-Then serve on your favourite local web server
 
 
-#### Made With [Phaser.io](https://phaser.io)
+[miniaturepong]: https://github.com/RetroVX/miniaturepong
