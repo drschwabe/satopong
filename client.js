@@ -3,20 +3,15 @@
 //## CSS ### 
 document.head.insertAdjacentHTML('beforeend', `
 <style>
+  ${require("tailwindcss/dist/tailwind.min.css")}
   @font-face {
     font-family: 'press_start_2pregular';
     src: url('assets/pressstart2p.woff2') format('woff2'); 
-    font-weight: normal;
-    font-style: normal;
   }
   .font-Press-Start-2 {
-    font-family: 'press_start_2pregular', monospace
+    font-family: 'press_start_2pregular', monospace;
   }
-</style>
-
-<link href="https://unpkg.com/tailwindcss@^1.0/dist/tailwind.min.css" rel="stylesheet">
-
-`)
+</style>`)
 
 document.body.setAttribute("style", "background-color: #282828; height: 100%;  display: grid;")
 document.body.innerHTML = `
