@@ -1,16 +1,36 @@
 //### PONG - game client ### 
 
-let body = document.getElementsByTagName('body')[0]
+//## CSS ### 
+document.head.insertAdjacentHTML('beforeend', `
+<style>
+  @font-face {
+    font-family: 'press_start_2pregular';
+    src: url('assets/pressstart2p.woff2') format('woff2'); 
+    font-weight: normal;
+    font-style: normal;
+  }
+  .font-Press-Start-2 {
+    font-family: 'press_start_2pregular', monospace
+  }
+</style>
 
-body.setAttribute("style", "background-color: #282828; height: 100%;  display: grid;")
-body.innerHTML = `
-<div id="gameCanvas" 
-     style="width: 360; height: 200; 
-            border : solid 1px gray; margin: auto; 
-            color: #fa0; font-size: 4em;">
-  <p id="playerScore" style="position:absolute; left: 10%;"></p>
-  <p id="aiScore" style="position:absolute; right: 10%;"></p>
-</div>`
+<link href="https://unpkg.com/tailwindcss@^1.0/dist/tailwind.min.css" rel="stylesheet">
+
+`)
+
+document.body.setAttribute("style", "background-color: #282828; height: 100%;  display: grid;")
+document.body.innerHTML = `
+<div class="flex font-Press-Start-2" style=" color: #fa0; font-size: 4em;">
+  <div id="playerScore" style="margin:auto;"></div>
+  <div id="gameCanvas" 
+      style="width: 360; height: 200; 
+             border: solid 1px gray; margin: auto;">
+  </div>
+  <div id="aiScore" style="margin:auto;"></div>
+</div>
+`
+
+//#### Phaser config ### 
 
 global.pong = {
   width : 36,
