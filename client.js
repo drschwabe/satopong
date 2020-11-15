@@ -11,19 +11,24 @@ document.head.insertAdjacentHTML('beforeend', `
   .font-Press-Start-2 {
     font-family: 'press_start_2pregular', monospace;
   }
+  canvas { border: solid 1px gray; }
 </style>`)
 
 document.body.setAttribute("style", "background-color: #282828; height: 100%;  display: grid;")
 document.body.innerHTML = `
 <div class="flex font-Press-Start-2" style=" color: #fa0; font-size: 4em;">
-  <div id="playerScore" style="margin:auto;"></div>
+  <div id="playerScore" class="text-center" style="margin:auto; width:20%"></div>
   <div id="gameCanvas" 
-      style="width: 360; height: 200; 
-             border: solid 1px gray; margin: auto;">
+      style="width: 60%; height: 1; 
+             margin: auto;">
   </div>
-  <div id="aiScore" style="margin:auto;"></div>
+  <div id="aiScore" class="text-center" style="margin:auto; width:20%"></div>
 </div>
 `
+let gameCanvasEl = document.getElementById('gameCanvas')
+let width = parseInt(getComputedStyle(gameCanvasEl)['width'])
+let height = parseInt(width * 0.555)
+gameCanvasEl.style.height = height
 
 //#### Phaser config ### 
 
