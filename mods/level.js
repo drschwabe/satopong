@@ -27,20 +27,13 @@ const hitPaddle = (ball, paddle) => {
     // ball is on the left-hand side of the paddle
     diff = ball.y - paddle.y
     velocity = (pong.ballVelocity * 0.8) * (diff * (pong.height * 0.7) ) 
-    // console.log('left-hand shot')
-    // console.log('velocity ' + velocity)
     ball.setVelocityY( velocity  )
   } else if (ball.y > paddle.y) { 
     // ball is on the right-hand side of the paddle
     diff = paddle.y + ball.y
     velocity = (pong.ballVelocity * 0.8) * (diff * (pong.height * 0.7) ) 
     ball.setVelocityY(velocity)
-    // console.log('right-hand shot')
-    // console.log('velocity ' + velocity)
-  } else { // middle
-    // ball is perfectly in the middle
-    // console.log('middle shot')
-    // console.log('velocity ' + velocity)
+  } else { // middle (never catches though; TODO)
     velocity = (pong.ballVelocity * 0.2) + Math.random() * (pong.ballVelocity)
     ball.setVelocityY(velocity)
   }
@@ -53,22 +46,23 @@ const resetBall =() => {
   //set ball back to starting position
   ball.setActive(false)
   ball.setVelocity(0)
+  ball.setMaxVelocity( originalBallVelocity )
   ball.setPosition(pong.width/2, pong.height/2)
   ball.setData('inMiddle', true)
   player.paddle.y = pong.height/2
 }
 
-let roundOver = winner => {
+const roundOver = winner => {
   let scoreId = '#' + (winner === ai ? 'aiScore' : 'playerScore')
   setTimeout(() => {
     winner.score += 1 
     document.querySelector(scoreId).innerHTML = winner.score
     resetBall() 
-    ball.setMaxVelocity( originalBallVelocity )
   }, 500) 
 }
 
-let roundOverThrottled = _.throttle(roundOver, 1000, {trailing: false})
+//^ Throttle this function since we are calling it on update (every frame); it only needs run once - the 500ms delay allows the ball to go outside of screen for a while before we reset & begin next round
+const roundOverThrottled = _.throttle(roundOver, 501, {trailing: false})
 
 const onWorldBounds = () => {
   //each time ball hits world bounds, increase the max velocity slightly: 

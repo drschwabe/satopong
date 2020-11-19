@@ -15,6 +15,8 @@ document.head.insertAdjacentHTML('beforeend', `
 </style>`)
 
 document.body.setAttribute("style", "background-color: black; height: 100%; ")
+
+//## HTML ###
 document.body.innerHTML = `
 <div class="flex font-Press-Start-2 mt-20" style=" color: #fa0; font-size: 4em;">
   <div id="playerScore" class="text-center" style="margin:auto; width:20%"></div>
@@ -25,10 +27,14 @@ document.body.innerHTML = `
   <div id="aiScore" class="text-center" style="margin:auto; width:20%"></div>
 </div>
 `
+
+//Set an explicit height for Phaser's canvas element
+//(works in combination with the responsive div above + forthcominig Phaser config.scale and zoom settings to fill available space ie- up to 60% of browser window size: 
 let gameCanvasEl = document.getElementById('gameCanvas')
 let width = parseInt(getComputedStyle(gameCanvasEl)['width'])
 let height = parseInt(width * 0.555)
 gameCanvasEl.style.height = height
+
 
 //#### Phaser config ### 
 
