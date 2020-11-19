@@ -13,6 +13,7 @@ let leftAudio
 let rightAudio
 let wallAudio
 let goalAudio
+let originalBallVelocity = pong.ballVelocity
 
 const hitPaddle = (ball, paddle) => {
   let diff = 0
@@ -26,20 +27,20 @@ const hitPaddle = (ball, paddle) => {
     // ball is on the left-hand side of the paddle
     diff = ball.y - paddle.y
     velocity = (pong.ballVelocity * 0.8) * (diff * (pong.height * 0.7) ) 
-    console.log('left-hand shot')
-    console.log('velocity' + velocity)
+    // console.log('left-hand shot')
+    // console.log('velocity ' + velocity)
     ball.setVelocityY( velocity  )
   } else if (ball.y > paddle.y) { 
     // ball is on the right-hand side of the paddle
     diff = paddle.y + ball.y
     velocity = (pong.ballVelocity * 0.8) * (diff * (pong.height * 0.7) ) 
     ball.setVelocityY(velocity)
-    console.log('right-hand shot')
-    console.log('velocity' + velocity)
+    // console.log('right-hand shot')
+    // console.log('velocity ' + velocity)
   } else { // middle
     // ball is perfectly in the middle
-    console.log('middle shot')
-    console.log('velocity' + velocity)
+    // console.log('middle shot')
+    // console.log('velocity ' + velocity)
     velocity = (pong.ballVelocity * 0.2) + Math.random() * (pong.ballVelocity)
     ball.setVelocityY(velocity)
   }
@@ -63,10 +64,23 @@ let roundOver = winner => {
     winner.score += 1 
     document.querySelector(scoreId).innerHTML = winner.score
     resetBall() 
+    ball.setMaxVelocity( originalBallVelocity )
   }, 500) 
 }
 
 let roundOverThrottled = _.throttle(roundOver, 1000, {trailing: false})
+
+const onWorldBounds = () => {
+  //each time ball hits world bounds, increase the max velocity slightly: 
+  let currentVelocity = ball.body.velocity
+  let xVel = currentVelocity.x > 0 ? currentVelocity.x + 1 : currentVelocity.x - 1
+  let yVel = currentVelocity.y > 0 ? currentVelocity.y + 1 : currentVelocity.y - 1
+
+  pong.ballVelocity = pong.ballVelocity + 0.1
+  ball.setMaxVelocity(  pong.ballVelocity  )
+  ball.setVelocity( xVel, yVel )
+  console.log(currentVelocity)
+}
 
 level.preload = () => {
   scene = pong.Phaser.scene.scenes[0]
@@ -134,9 +148,9 @@ level.create = () => {
       ball.setActive(true)
       // 'randomly' choose which way the ball goes
       if(Math.random() > 0.49) {
-        ball.setVelocity(-20, Phaser.Math.Between(-1, -4))
+        ball.setVelocity(-pong.ballVelocity, Phaser.Math.Between(-1, -4))
       } else {
-        ball.setVelocity(20, Phaser.Math.Between(1, 4))
+        ball.setVelocity(pong.ballVelocity, Phaser.Math.Between(1, 4))
       } 
       ball.setData('inMiddle', false)
     }
@@ -148,6 +162,8 @@ level.create = () => {
   })
 
   scene.physics.add.collider(ball, pong.playerGroup, hitPaddle, null, scene)
+
+  scene.physics.world.on('worldbounds', onWorldBounds)
 }
 
 level.update = (time, delta) => {
