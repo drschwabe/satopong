@@ -16,25 +16,32 @@ let goalAudio
 
 const hitPaddle = (ball, paddle) => {
   let diff = 0
+  let velocity 
 
-  if(paddle.type === 'Left') {
-    rightAudio.play()
-  } else if(paddle.type === 'Right') {
-    leftAudio.play()
-  }
+  if(paddle.type === 'Left') rightAudio.play()
+  if(paddle.type === 'Right') leftAudio.play()
 
   // above
   if (ball.y < paddle.y) {
     // ball is on the left-hand side of the paddle
     diff = ball.y - paddle.y
-    ball.setVelocityY(12 * diff)
+    velocity = (pong.ballVelocity * 0.8) * (diff * (pong.height * 0.7) ) 
+    console.log('left-hand shot')
+    console.log('velocity' + velocity)
+    ball.setVelocityY( velocity  )
   } else if (ball.y > paddle.y) { 
     // ball is on the right-hand side of the paddle
     diff = paddle.y + ball.y
-    ball.setVelocityY(12 * diff)
+    velocity = (pong.ballVelocity * 0.8) * (diff * (pong.height * 0.7) ) 
+    ball.setVelocityY(velocity)
+    console.log('right-hand shot')
+    console.log('velocity' + velocity)
   } else { // middle
     // ball is perfectly in the middle
-    ball.setVelocityY(2 + Math.random() * 10)
+    console.log('middle shot')
+    console.log('velocity' + velocity)
+    velocity = (pong.ballVelocity * 0.2) + Math.random() * (pong.ballVelocity)
+    ball.setVelocityY(velocity)
   }
 }
 
@@ -148,9 +155,9 @@ level.update = (time, delta) => {
   ai.update(ball)
 
   //if ball goes out on left side (player)
-  if(ball.x < 1) return roundOverThrottled(ai)
+  if(ball.x < 0) return roundOverThrottled(ai)
   //ball goes out on right side (ai)
-  if(ball.x > pong.width -1) return roundOverThrottled(player)
+  if(ball.x > pong.width) return roundOverThrottled(player)
 }
 
 

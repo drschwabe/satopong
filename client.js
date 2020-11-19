@@ -14,9 +14,9 @@ document.head.insertAdjacentHTML('beforeend', `
   canvas { border: solid 1px gray; }
 </style>`)
 
-document.body.setAttribute("style", "background-color: #282828; height: 100%;  display: grid;")
+document.body.setAttribute("style", "background-color: black; height: 100%; ")
 document.body.innerHTML = `
-<div class="flex font-Press-Start-2" style=" color: #fa0; font-size: 4em;">
+<div class="flex font-Press-Start-2 mt-20" style=" color: #fa0; font-size: 4em;">
   <div id="playerScore" class="text-center" style="margin:auto; width:20%"></div>
   <div id="gameCanvas" 
       style="width: 60%; height: 1; 
@@ -35,7 +35,7 @@ gameCanvasEl.style.height = height
 global.pong = {
   width : 36,
   height : 20,
-  ballVelocity : 15
+  ballVelocity : 23
 }
 pong.phaserConfig = {
   type: Phaser.AUTO,

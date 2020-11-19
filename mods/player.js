@@ -4,7 +4,7 @@ let player = {
 }
 player.init = (x, y) => {
   // Add sprite
-  player.paddle = pong.playerGroup.create(x, y, "pong").setScale(0.025).setOrigin(0.7, 0.7).setImmovable()
+  player.paddle = pong.playerGroup.create(x, y, "pong").setScale(0.025).setOrigin(0.7).setImmovable()
   player.paddle.setCollideWorldBounds(true)
   player.paddle.type = 'Left'
   return player
