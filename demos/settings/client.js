@@ -1,6 +1,9 @@
 const $ = require('jquery')
+const _ = require('underscore')
+const _slugify = require('underscore.string/slugify')
 
 import {html,render} from 'lit-html'
+import {repeat} from 'lit-html/directives/repeat.js';
 
 document.head.insertAdjacentHTML('beforeend', `
 <style>
@@ -17,30 +20,42 @@ document.head.insertAdjacentHTML('beforeend', `
 
 document.body.setAttribute("style", "background-color: black;")
 
-$('body').addClass('text-center pt-10  font-Press-Start-2 text-white').prepend('<div id="menu"></div>')
+$('body').addClass('text-center pt-10 font-Press-Start-2').prepend('<div id="menu"></div>')
 
-let menu = [
-  { name: 'SATOPONG',
+let menu = {
+  'SATOPONG': {
     highlighted : true, 
-    classes : 'text-5xl' 
+    classes : 'text-5xl'
   },
-  { name: 'PLAY',
-    disabled : true 
+  'PLAY' : {
+    disabled : true,
+    classes: 'text-3xl'
   },
-  {
-    name: "CONNECT-MONEYSOCKET"
-  }
-]
+  'CONNECT MONEYSOCKET' : {},
+  'INSERT SATOSHIS' : { disabled: true },
+  'EJECT SATOSHIS' : { disabled: true }
+}
 
-let menuTemplate = () => html`
-  ${menu.map( item => html`
-    <h1 class="py-5
-               ${item.disabled ? 'opacity-20' : '' }
-               ${item.classes ? item.classes : '' }">
-      ${item.name}
-    </h1>
-  `)}
-`
 
-render( menuTemplate() , document.getElementById('menu'))
+let computeTemplate = menu => {
+  //Convert the 'user friendly' supplied object into a mechanical template-ready object: 
+  menu = _.map( menu, (val, key) => {
+    let item = _.extend( { name : key }, val )
+    if(!item.href) item.href = 'pong/menu/' + _slugify(item.name)
+    return item
+  }) 
+  return html`
+    ${  repeat( menu, item => html`
+      <a class="h1 py-2 block text-white
+                ${item.disabled ? 'text-opacity-25' : 'text-opacity-75 hover:text-opacity-100' }
+                ${item.classes ? item.classes : '' }"
+        href="${item.href}"
+      >
+        ${item.name}
+      </a>
+    `)}
+  `
+}
+
+render( computeTemplate(menu) , document.getElementById('menu'))
 
