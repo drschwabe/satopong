@@ -19,19 +19,27 @@ document.body.setAttribute("style", "background-color: black;")
 
 $('body').addClass('text-center pt-10 font-Press-Start-2').prepend('<div id="menu"></div>')
 
-let startMenu = {
-  'SATOPONG': {
+let startMenu = [
+  {
+    name: 'SATOPONG',
     highlighted : true, 
     classes : 'text-5xl'
   },
-  'PLAY' : {
+  {
+    name: 'PLAY', 
     disabled : true,
     classes: 'text-3xl'
   },
-  'CONNECT MONEYSOCKET' : {},
-  'INSERT SATOSHIS' : { disabled: true },
-  'EJECT SATOSHIS' : { disabled: true }
-}
+  'CONNECT MONEYSOCKET', 
+  {
+    name: 'INSERT SATOSHIS',
+    disabled: true,
+  },
+  {
+    name: 'EJECT SATOSHIS',
+    disabled: true
+  }
+]
 
 let connectMenu = {
   'COPY BEACON' : {
@@ -53,9 +61,9 @@ let connectMenu = {
 
 let arcadeMenu = require('../../mods/arcadeMenu')
 
-
 arcadeMenu( startMenu )
+arcadeMenu.on('connect-moneysocket', connectMenu)
 
 setTimeout(() => {
-  arcadeMenu( connectMenu )
+  //arcadeMenu( connectMenu )
 }, 2000);
