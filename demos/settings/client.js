@@ -101,10 +101,13 @@ let connectMenu = [
 
 let arcadeMenu = require('../../mods/arcadeMenu')
 
-arcadeMenu( startMenu)
+arcadeMenu( startMenu )
 arcadeMenu.on('connect-moneysocket', connectMenu)
 arcadeMenu.on('back', startMenu)
+arcadeMenu.on('copy-beacon', () => {
+  console.log('copy the beacon!!!')
+})
 
 setTimeout(() => {
   //arcadeMenu( connectMenu )
-}, 2000);
+}, 2000)

@@ -16,9 +16,10 @@ window.onhashchange = () => {
   let path = _s.strRight(window.location.hash, 'arcadeMenu/')
   let matchingRoute = _.findWhere( routes, { path : path  })
   if(!matchingRoute) {
-    //window.location.hash = '' //< doesn't work; need to actually modify the popstate or however that works
+    //window.location.hash = '' //< doesn't work; need to actually modify the popstate or however that doesn't modify URL 
     return console.warn('no matching Arcade Menu for: ' + path)
   }
+  if( matchingRoute.function)  return matchingRoute.function( menu )
   arcadeMenu( matchingRoute.menu )
 }
 
@@ -81,12 +82,19 @@ const computeTemplate = menu => {
 
 const renderMenu = () => render( computeTemplate(menu) , document.getElementById('menu'))
 
-const arcadeMenu = (menuState) => {
+const arcadeMenu = menuState => {
   menu = menuState
   renderMenu(menu) 
 }
 
-arcadeMenu.on = (path, newMenuState) => {
-  routes.push( { path : path, menu : newMenuState })
+arcadeMenu.on = (path, newMenuStateOrFunction) => {
+  let route = { path : path }
+  if(_.isFunction(newMenuStateOrFunction)) {
+    route.function = newMenuStateOrFunction
+  } else {
+    route.menu = newMenuStateOrFunction
+  }
+  routes.push(route)
 }
+
 module.exports = arcadeMenu
