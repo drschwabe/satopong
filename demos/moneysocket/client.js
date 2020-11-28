@@ -1,7 +1,15 @@
 const $ = require('jquery')
 const { html, render } = require('lit-html')
-const { MoneysocketBeacon, ProviderStack } = require('moneysocket')
+
+const { MoneysocketBeacon, ProviderStack, WebsocketLocation } = require('moneysocket')
+
+//constants from moneysocket reference spec: 
+const DEFAULT_HOST = "relay.socket.money"
+const DEFAULT_PORT = 443
+const DEFAULT_USE_TLS = true
+
 const asyncJs = require('async') 
+const Kjua = require('kjua')
 
 //### UI state and template/rendering ####
 $('body').html( '<div id="content" class="center"></div>')
@@ -22,7 +30,7 @@ const template = () => html`
     html`
       <p class="green bold">Seller moneysocket active!</p>
       <h3>beacon:</h3>
-      <p>${state.beaconStr}</p>
+      <div id="beacon"></div>
     `
     : ''
   }
@@ -46,10 +54,19 @@ providerStack.onstackevent = (layer_name, nexus, status)  => {
     state.connected = true
     delete state.error
 
-    //share beacon with buyer: 
-    state.beaconStr = new MoneysocketBeacon().toString()
-        
+    //now create a new beacon to share with the buyer... 
+    let sellerBeaconForBuyer = generateNewBeacon() 
+    
+    let beaconStr = sellerBeaconForBuyer.toString()
+    renderPage() 
+
+    console.log( beaconStr )
+
     //convert to a QR code ... TODO
+    let sellerBeaconForBuyerQr = qrCode( sellerBeaconForBuyer.toBech32Str())
+  
+    document.getElementById('beacon').appendChild(sellerBeaconForBuyerQr)
+
   }
   if(status === 'NEXUS_DESTROYED' || status === 'NEXUS_REVOKED') {
     state.connected = false
@@ -63,6 +80,24 @@ providerStack.onstackevent = (layer_name, nexus, status)  => {
 
 }
 
+
+const generateNewBeacon = () => {
+  let location = new WebsocketLocation(DEFAULT_HOST, DEFAULT_PORT,DEFAULT_USE_TLS)
+  let beacon = new MoneysocketBeacon()
+  beacon.addLocation(location)
+  return beacon
+}
+
+const qrCode = bech32str => {
+  let b32 = bech32str.toUpperCase()
+  return Kjua({
+    ecLevel: "M",
+    render:  "canvas",
+    size:    120,
+    text:    b32,
+    quiet:   0,
+  })
+}
 
 //connect to 'on-demand cloud lightning moneysocket-enabled node' :
 const getBeacon = cb => {
