@@ -11,6 +11,7 @@ const DEFAULT_USE_TLS = true
 const asyncJs = require('async') 
 const Kjua = require('kjua')
 const _ = require('underscore')
+const undercoin = require('undercoin')
 
 //### UI state and template/rendering ####
 $('body').html( '<div id="content" class="center"></div>')
@@ -43,7 +44,7 @@ const template = () => html`
 
   ${ state.buyerConnected ? 
     html`<p class="green bold">Buyer connected!</p>
-    <p>Available micro satoshis: ${state.buyerAvailableSats} </p>`
+    <p>Available satoshis: ${state.buyerAvailableSats} </p>`
    : ''
   }
 
@@ -126,7 +127,7 @@ consumerStack.onproviderinfo = info => {
   //we connected!  
   delete state.buyerConnectedButNoSats 
   state.buyerConnected = true 
-  state.buyerAvailableSats = info.wad.msats 
+  state.buyerAvailableSats = undercoin.msat2sat( info.wad.msats )
   renderPage() 
 }
 

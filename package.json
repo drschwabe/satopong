@@ -18,7 +18,7 @@
     "nodejs-html": "^0.1.1",
     "phaser": "^3.23.0",
     "tailwindcss": "^1.9.6",
-    "undercoin": "0.0.2-c",
+    "undercoin": "0.0.3",
     "underscore": "^1.11.0",
     "underscore.string": "^3.3.5",
     "watchify": "^3.11.1"
