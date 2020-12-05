@@ -66,6 +66,7 @@ const consumerStack = new ConsumerStack
 providerStack.onstackevent = (layer_name, nexus, status)  => {
   console.log(status)
   if(status === 'NEXUS_WAITING') {
+    if(state.connected) return 
     state.connecting = false
     state.connected = true
     delete state.error
