@@ -1,6 +1,4 @@
-const $ = require('jquery')
-const { html, render } = require('lit-html')
-
+//### Moneysocket raw demo ###
 const { MoneysocketBeacon, ProviderStack, ConsumerStack, WebsocketLocation } = require('moneysocket')
 
 //constants from moneysocket reference spec: 
@@ -8,6 +6,9 @@ const DEFAULT_HOST = "relay.socket.money"
 const DEFAULT_PORT = 443
 const DEFAULT_USE_TLS = true
 
+//### other deps ### 
+const $ = require('jquery')
+const { html, render } = require('lit-html')
 const asyncJs = require('async') 
 const Kjua = require('kjua')
 const _ = require('underscore')
@@ -58,8 +59,10 @@ const renderPage = () => render( template(), document.getElementById('content') 
 
 renderPage()
 
-//### Seller app functionality ### 
-//establish moneysocket...
+
+//### handle events ###
+
+//establish moneysocket stacks for provider (us) and seller (user): 
 const providerStack = new ProviderStack
 const consumerStack = new ConsumerStack
 
@@ -105,6 +108,7 @@ providerStack.onstackevent = (layer_name, nexus, status)  => {
 
 }
 
+//### Buyer connection functionality ### 
 consumerStack.onstackevent = (layer_name, nexus, status)  => {
   console.log(status)
   if(status === 'NEXUS_CREATED') {
@@ -135,6 +139,8 @@ consumerStack.onproviderinfo = info => {
 // consumerStack.onping = msecs => {
 //   console.log(msecs)
 // }
+
+//### functions ###
 
 const generateNewBeacon = () => {
   let location = new WebsocketLocation(DEFAULT_HOST, DEFAULT_PORT,DEFAULT_USE_TLS)
@@ -195,4 +201,5 @@ loopForBeacon = () =>
       )
   ) 
 
+//### start app ### 
 loopForBeacon()
