@@ -1,4 +1,4 @@
-//### Moneysocket raw demo ###
+//### Moneysocket + (arcade) Settings demo ###
 const { MoneysocketBeacon, ProviderStack, ConsumerStack, WebsocketLocation } = require('moneysocket')
 
 //constants from moneysocket reference spec: 
