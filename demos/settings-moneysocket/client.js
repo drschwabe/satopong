@@ -82,10 +82,13 @@ consumerStack.onstackevent = (layer_name, nexus, status)  => {
       //if the nexus obj has a property '.handshake_finished' regardless of it is false, it means the buyer has at least a connection (but no downstream connection; ie- they have not yet connected their wallet)
       state.buyerConnectedButNoSats = true 
       console.log('buyerConnectedButNoSats')
+      arcadeMenu(connectMenuConnected)
+      $('#beacon').remove() 
     }
   } else if(status === 'NEXUS_REVOKED' && state.buyerConnectedButNoSats) {
     delete state.buyerConnectedButNoSats
     state.error = 'connection to buyer lost'
+    console.log('buyerConnectedButNoSats' )
     console.log('connection to buyer lost')
   } else if(status === 'NEXUS_REVOKED' && state.buyerConnected) {
     state.buyerConnected = false
@@ -271,6 +274,29 @@ let connectMenu = [
       classes: 'text-indigo-400',
 
     }
+  },
+  {
+    name: 'back',
+    classes: 'mt-20'
+  }
+]
+
+let connectMenuConnected = [
+  { 
+    name: html`awaiting buyer...<br>
+    <br>(connect downstream <br>satoshi source)`,
+    classes: 'mt-10 text-indigo-200',
+    selectable : false
+  },
+  {
+    name: 'MONEYSOCKET CONNECTED',
+    classes: 'my-10',
+    style : 'color: #6df458dc;', 
+    selectable : false
+  },
+  {
+    name: 'DISCONNECT',
+    classes : 'mt-1 text-silver'
   },
   {
     name: 'back',

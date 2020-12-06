@@ -52,7 +52,7 @@ const computeTemplate = menu => {
     //if href is not provided, or not set as explicitly false, auto slug it: 
     if(_.isUndefined(item.href)) item.href = '#arcadeMenu/' + _slugify(item.name)
     //oterhwise if explicitly false, or item has disabled prop, we need to set it to undefined so it doesn't render in template (as per lit-html behavior)
-    if(item.href === false || item.disabled ) item.href = undefined
+    if(item.href === false || item.disabled || item.selectable === false ) item.href = undefined
 
     //an 'activated' property is an alternate version of the item, 
     //we use it instead of the parent obj if 'show' prop is active: 

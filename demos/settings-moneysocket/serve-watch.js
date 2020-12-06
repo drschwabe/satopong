@@ -40,7 +40,7 @@ expressApp.get('/moneysocketserver/beacon', async (req, res) => {
   //did we get one? 
   if(!beacon.length || beacon.search('moneysocket') < 0) {
     //if no oputput data and send null to client: 
-    console.warn(output.toString)
+    console.warn(output.toString())
     return res.send(null)
   }
 
