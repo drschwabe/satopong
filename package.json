@@ -16,7 +16,7 @@
     "lit-html": "^1.3.0",
     "masscss": "^1.0.0-beta.1",
     "moneysocket": "git+https://github.com/moneysocket/js-moneysocket.git",
-    "nodejs-html": "^0.1.1",
+    "nodejs-html": "^0.1.2",
     "phaser": "^3.23.0",
     "tailwindcss": "^1.9.6",
     "undercoin": "0.0.3",
