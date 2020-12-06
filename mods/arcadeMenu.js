@@ -14,13 +14,15 @@ let routes = []
 window.onhashchange = () => {
   if(window.location.hash.search('arcadeMenu') === -1 )  return 
   let path = _s.strRight(window.location.hash, 'arcadeMenu/')
-  let matchingRoute = _.findWhere( routes, { path : path  })
-  if(!matchingRoute) {
+  let matchingRoutes = _.where( routes, { path : path  })
+  if(!matchingRoutes) {
     //window.location.hash = '' //< doesn't work; need to actually modify the popstate or however that doesn't modify URL 
     return console.warn('no matching Arcade Menu for: ' + path)
   }
-  if( matchingRoute.function)  return matchingRoute.function( menu )
-  arcadeMenu( matchingRoute.menu )
+  matchingRoutes.forEach( route => {
+    if( route.function)  return route.function( menu )
+    arcadeMenu( route.menu )
+  })
 }
 
 //Rendering: 
@@ -67,9 +69,11 @@ const computeTemplate = menu => {
   return html`
     ${  menu.map( item => html`
       <a class="block cursor-default
-                ${item.disabled ? 'text-opacity-25' : 'text-opacity-75 hover:text-opacity-100' }
+                ${ item.disabled ? 'text-opacity-25' : '' }
+                ${ !item.disabled && item.selectable !==  false ?  'text-opacity-75 hover:text-opacity-100' : '' }
                 ${item.classes}
                 ${item.selectable === false ? ' disabled' : ''}
+                ${item.invisible ? 'invisible' : ''}
                 "
          style="${ item.style }"
          href="${ifDefined(item.href ? item.href : undefined )}"
