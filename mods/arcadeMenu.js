@@ -78,7 +78,7 @@ const computeTemplate = menu => {
          style="${ item.style }"
          href="${ifDefined(item.href ? item.href : undefined )}"
       >
-        ${item.name}
+        ${ item.name && item.name.function ? item.name.function() : item.name }
       </a>
     `)}
   `

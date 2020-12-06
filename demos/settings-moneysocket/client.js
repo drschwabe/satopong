@@ -66,12 +66,9 @@ providerStack.onstackevent = (layer_name, nexus, status)  => {
     state.beaconReceived = false
     state.error = 'connection to seller lost'
     //show this err brierfly before starting the loop again:
+    //todo: render err
     setTimeout( () => loopForBeacon, 2000)
   }
-  
-  console.log('renderPage ' + status)
-  //renderPage() 
-
 }
 
 //### Buyer connection functionality ### 
@@ -90,14 +87,14 @@ consumerStack.onstackevent = (layer_name, nexus, status)  => {
     state.error = 'connection to buyer lost'
     console.log('buyerConnectedButNoSats' )
     console.log('connection to buyer lost')
+    //todo: render error
   } else if(status === 'NEXUS_REVOKED' && state.buyerConnected) {
     state.buyerConnected = false
     delete state.buyerAvailableSats
     state.error = 'connection to buyer lost (was connected OK)'
     console.log('connection to buyer lost (was connected OK)')
+    //todo: render error
   }
-  console.log('renderPage... NEXUS_CREATED')
-  //renderPage()
 }
 
 consumerStack.onproviderinfo = info => {
@@ -106,7 +103,8 @@ consumerStack.onproviderinfo = info => {
   delete state.buyerConnectedButNoSats 
   state.buyerConnected = true 
   state.buyerAvailableSats = undercoin.msat2sat( info.wad.msats )
-  //renderPage() 
+  arcadeMenu(connectMenuConnectedSatoshis)
+  $('#beacon').remove()
 }
 
 // consumerStack.onping = msecs => {
@@ -136,14 +134,12 @@ const qrCode = bech32str => {
 //connect to 'on-demand cloud lightning moneysocket-enabled node' :
 const getBeacon = cb => {
   state.connecting = true
-  //renderPage() 
   $.get('/moneysocketserver/beacon', body => {
     console.log('get beacon')
 
     if(!body || !body.beacon) {
       state.error = 'no beacon :/'
       state.connecting = false 
-      //renderPage()
       if(cb) return cb() 
       return  
     } 
@@ -175,7 +171,6 @@ loopForBeacon = () =>
       )
   ) 
 //(by calling this function; that will happen after user navigates into settings mneu)
-
 
 
 //### Settings Menu ###
@@ -270,9 +265,9 @@ let connectMenu = [
     selectable : false, 
     activated : {
       merge : true, 
-      name : 'awaiting buyer...',
-      classes: 'text-indigo-400',
-
+      style : 'color: #fffbc5ff;',
+      name : html`awaiting buyer...<br>
+      <br><span class="muted">(connect a wallet)</span>`
     }
   },
   {
@@ -303,6 +298,23 @@ let connectMenuConnected = [
     classes: 'mt-20'
   }
 ]
+
+let connectMenuConnectedSatoshis = _.clone(connectMenuConnected) 
+
+connectMenuConnectedSatoshis[0] = {
+  name : 'AVAILABLE SATOSHIS', 
+  classes : 'my-10',
+  selectable : false
+}
+
+connectMenuConnectedSatoshis.splice(1, 0, {
+  name : {
+    function: () => html`${ state.buyerAvailableSats }`
+  },
+  selectable : false,
+  classes : 'text-white text-4xl'
+})
+
 
 let arcadeMenu = require('../../mods/arcadeMenu')
 
