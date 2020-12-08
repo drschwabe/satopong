@@ -25,7 +25,7 @@ global.state = {
 
 //### handle events ###
 
-//establish moneysocket stacks for provider (us) and seller (user): 
+//establish moneysocket stacks for provider (us) and consumer (user): 
 const providerStack = new ProviderStack
 const consumerStack = new ConsumerStack
 
@@ -279,8 +279,9 @@ let connectMenu = [
 let connectMenuConnected = [
   { 
     name: html`awaiting buyer...<br>
-    <br>(connect downstream <br>satoshi source)`,
-    classes: 'mt-10 text-indigo-200',
+    <br><span class="muted">(connect downstream <br>satoshi source)</span>`,
+    classes: 'mt-10',
+    style : 'color: #fffbc5ff;',
     selectable : false
   },
   {
