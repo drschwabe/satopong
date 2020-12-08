@@ -101,10 +101,23 @@ consumerStack.onproviderinfo = info => {
   console.log(info)
   //we connected!  
   delete state.buyerConnectedButNoSats 
-  state.buyerConnected = true 
   state.buyerAvailableSats = undercoin.msat2sat( info.wad.msats )
-  arcadeMenu(connectMenuConnectedSatoshis)
+  state.credits = 0
   $('#beacon').remove()
+  if(!state.buyerConnected) { 
+    //state.buyerConnected is falsy until this function is called initially...
+    state.buyerConnected = true
+    arcadeMenu(connectMenuConnectedSatoshis)
+
+    //update the main menu state for when we go back to it: 
+    startMenu[3].activated.show = true
+    startMenu[4].activated.show = true
+    return
+  } //^^ so we return by rendering the appropriate screen... 
+  //otherwise we re-render the existing screen (if said screen is one of these below):  
+  if(window.location.hash === '#arcadeMenu/back') return arcadeMenu()
+  if(window.location.hash === '#arcadeMenu/copy-beacon') return arcadeMenu()
+  if(window.location.hash === '#arcadeMenu/connect-moneysocket') return arcadeMenu()  
 }
 
 // consumerStack.onping = msecs => {
@@ -203,6 +216,10 @@ document.body.setAttribute("style", "background-color: black;")
 
 $('body').addClass('text-center pt-10 font-Press-Start-2').prepend('<div id="menu"></div>')
 
+
+let moneyGreen = '#6df458dc'
+
+
 let startMenu = [
   {
     default : true, 
@@ -224,21 +241,54 @@ let startMenu = [
   {
     name: 'PLAY', 
     disabled : true,
-    classes: 'text-3xl my-8'
+    classes: 'text-3xl my-8',
+    activated : {
+      classes: 'text-yellow-400',
+      merge : true,
+      disabled : false,
+      hover : 'hv-yellow'
+    }
   },
   {
     name: 'CONNECT MONEYSOCKET', 
-    classes: 'my-5'
+    classes: 'my-5',
+    activated : {
+      name : 'MONEYSOCKET CONNECTED',
+      style : `color: ${moneyGreen}`, 
+      merge : true
+    }
   },
   {
     name: 'INSERT SATOSHIS',
-    disabled: true,
-    classes: 'my-5'
+    disabled: () => state.buyerAvailableSats,
+    classes: 'my-5',
   },
   {
     name: 'EJECT SATOSHIS',
-    disabled: true,
-    classes: 'my-5'
+    disabled: () => state.credits,
+    classes: 'my-5',
+  },
+  {
+    name: 'SATOSHIS: 0',
+    disabled : true, 
+    classes : 'mt-12',
+    hide : () => state.buyerAvailableSats
+  },
+  {
+    name : {
+      function: () => html`SATOSHIS: <span style="color:${moneyGreen}">${ state.buyerAvailableSats }</span>`
+    },
+    classes : 'float-left mt-12 pl-10',
+    invisible : () => !state.buyerAvailableSats,
+    selectable : false
+  }, 
+  {
+    name : {
+      function: () => html`CREDITS: <span class="text-yellow-400">${ state.credits }</span>`
+    },
+    classes : 'float-right mt-12 pr-10',
+    invisible : () => !state.buyerAvailableSats,
+    selectable : false
   }
 ]
 
@@ -287,7 +337,7 @@ let connectMenuConnected = [
   {
     name: 'MONEYSOCKET CONNECTED',
     classes: 'my-10',
-    style : 'color: #6df458dc;', 
+    style : `color: ${moneyGreen}`, 
     selectable : false
   },
   {
