@@ -64,16 +64,31 @@ const computeTemplate = menu => {
     if(item.selectable === false || item.disabled) item.classes = item.classes + ' disabled'
     //if no 'classes' prop, just add a blank one to save checking for this later: 
     if(!item.classes) item.classes = ''
+
+    //if the invisible property is a function that if evaluates as truthy will be invisible. 
+    if(item.invisible && _.isFunction(item.invisible)) {
+      item.invisible = item.invisible() ? true : false 
+    } //same with hide property; which unlike invisibile will also omit the element from layout (it will no longer take up space) 
+    if(item.hide && _.isFunction(item.hide)) {
+      item.hide = item.hide() ? true : false 
+    }
+    if(item.disabled && _.isFunction(item.disabled)) {
+      item.disabled = item.disabled() ? false : true 
+    }
+
     return item
-  }) 
+  })
+
   return html`
     ${  menu.map( item => html`
       <a class="block cursor-default
                 ${ item.disabled ? 'text-opacity-25' : '' }
-                ${ !item.disabled && item.selectable !==  false ?  'text-opacity-75 hover:text-opacity-100' : '' }
+                ${ !item.disabled && item.selectable !==  false  && !item.hover ?  'text-opacity-75 hover:text-opacity-100' : '' }
                 ${item.classes}
                 ${item.selectable === false ? ' disabled' : ''}
-                ${item.invisible ? 'invisible' : ''}
+                ${item.invisible ? ' invisible' : ''}
+                ${item.hide ? ' hide' : '' }
+                ${item.hover ? ` ${item.hover}` : '' }
                 "
          style="${ item.style }"
          href="${ifDefined(item.href ? item.href : undefined )}"
@@ -87,6 +102,8 @@ const computeTemplate = menu => {
 const renderMenu = () => render( computeTemplate(menu) , document.getElementById('menu'))
 
 const arcadeMenu = menuState => {
+  if(!menuState) return renderMenu(menu) //< just render the existing menu if no state provided. 
+  //otherwise we store it and render the new menu state provided: 
   menu = menuState
   renderMenu(menu) 
 }
