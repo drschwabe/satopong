@@ -110,8 +110,9 @@ consumerStack.onproviderinfo = info => {
     arcadeMenu(connectMenuConnectedSatoshis)
 
     //update the main menu state for when we go back to it: 
-    startMenu[3].activated.show = true
+    //startMenu[3].activated.show = true
     startMenu[4].activated.show = true
+    startMenu[5].activated.show = true
     return
   } //^^ so we return by rendering the appropriate screen... 
   //otherwise we re-render the existing screen (if said screen is one of these below):  
@@ -262,6 +263,10 @@ let startMenu = [
     name: 'INSERT SATOSHIS',
     disabled: () => state.buyerAvailableSats,
     classes: 'my-5',
+    activated : { 
+      merge : true,
+      hover : 'hv-yellow'
+    }
   },
   {
     name: 'EJECT SATOSHIS',
@@ -299,7 +304,7 @@ let connectMenu = [
   },
   { 
     name: 'COPY BEACON',
-    classes : 'mt-10',
+    classes : 'mt-10 text-blue-200',
     invisible: true, 
     activated : {
       show : false, 
