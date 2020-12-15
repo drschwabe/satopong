@@ -1,5 +1,5 @@
 //### Moneysocket + (arcade) Settings demo ###
-const { MoneysocketBeacon, ProviderStack, ConsumerStack, WebsocketLocation } = require('moneysocket')
+const { MoneysocketBeacon, ConsumerStack, WebsocketLocation } = require('moneysocket')
 
 //constants from moneysocket reference spec: 
 const DEFAULT_HOST = "relay.socket.money"
@@ -25,11 +25,11 @@ global.state = {
 
 //### handle events ###
 
-//establish moneysocket stacks for provider (us) and consumer (user): 
-const providerStack = new ProviderStack
-const consumerStack = new ConsumerStack
+//establish moneysocket stacks to connect to terminus (our lightning node) and consumer (their wallet app): 
+const consumerStackTerminus = new ConsumerStack
+const consumerStackBuyer =  new ConsumerStack
 
-providerStack.onstackevent = (layer_name, nexus, status)  => {
+consumerStackTerminus.onstackevent = (layer_name, nexus, status)  => {
   console.log(status)
   if(status === 'NEXUS_WAITING') {
     if(state.connected) return 
@@ -56,7 +56,7 @@ providerStack.onstackevent = (layer_name, nexus, status)  => {
 
     setTimeout( () => {
       //now connect to the same beacon we just created, but with the consumer stack....
-      consumerStack.doConnect(  sellerBeaconForBuyer  )
+      consumerStackBuyer.doConnect(  sellerBeaconForBuyer  )
       
     }, 2000)
 
@@ -72,7 +72,7 @@ providerStack.onstackevent = (layer_name, nexus, status)  => {
 }
 
 //### Buyer connection functionality ### 
-consumerStack.onstackevent = (layer_name, nexus, status)  => {
+consumerStackBuyer.onstackevent = (layer_name, nexus, status)  => {
   console.log(status)
   if(status === 'NEXUS_CREATED') {
     if( _.isBoolean(nexus.handshake_finished) && !nexus.handshake_finished) {
@@ -97,7 +97,7 @@ consumerStack.onstackevent = (layer_name, nexus, status)  => {
   }
 }
 
-consumerStack.onproviderinfo = info => {
+consumerStackBuyer.onproviderinfo = info => {
   console.log(info)
   //we connected!  
   delete state.buyerConnectedButNoSats 
@@ -167,7 +167,7 @@ const getBeacon = cb => {
 
     let serverBeacon = new MoneysocketBeacon.fromBech32Str(body.beacon)[0]
 
-    providerStack.doConnect( serverBeacon )
+    consumerStackTerminus.doConnect( serverBeacon )
 
     if(cb) return cb() 
   })
