@@ -33,7 +33,7 @@ consumerStackTerminus.onstackevent = (layer_name, nexus, status)  => {
   console.log(status)
   if(status === 'NEXUS_WAITING') {
     if(state.connected) return 
-    state.connecting = false
+    state.connecting = false //< upon re-render this tells template to show the beacon instead of loading spinner
     state.connected = true
     delete state.error
 
@@ -42,12 +42,8 @@ consumerStackTerminus.onstackevent = (layer_name, nexus, status)  => {
     
     let beaconStr = sellerBeaconForBuyer.toString()
     state.beaconStr = beaconStr
-
-    let sellerBeaconForBuyerQr = qrCode( sellerBeaconForBuyer.toBech32Str())
+    state.beaconImg = qrCode( sellerBeaconForBuyer.toBech32Str())
   
-    //replace hourglass loading spinner with QR code: 
-    $('#beacon').html(sellerBeaconForBuyerQr)
-
     connectMenu[2].invisible = false 
     connectMenu[3].activated.show = true  
 
@@ -88,13 +84,13 @@ consumerStackBuyer.onstackevent = (layer_name, nexus, status)  => {
       //if the nexus obj has a property '.handshake_finished' regardless of it is false, it means the buyer has at least a connection (but no downstream connection; ie- they have not yet connected their wallet)
       state.buyerConnectedButNoSats = true 
       console.log('buyerConnectedButNoSats')
+      startMenu[4].activated.show = true
       arcadeMenu(connectMenuConnected)
       $('#beacon').remove() 
     }
   } else if(status === 'NEXUS_REVOKED' && state.buyerConnectedButNoSats) {
     delete state.buyerConnectedButNoSats
     state.error = 'connection to buyer lost'
-    console.log('buyerConnectedButNoSats')
     console.log('connection to buyer lost')
     //todo: render error
   } else if(status === 'NEXUS_REVOKED' && state.buyerConnected) {
@@ -265,7 +261,8 @@ let startMenu = [
     activated : {
       name : 'MONEYSOCKET CONNECTED',
       style : `color: ${moneyGreen}`, 
-      merge : true
+      merge : true,
+      hover : 'hv-blue-i'
     }
   },
   {
@@ -315,7 +312,8 @@ let connectMenu = [
   {
     name: { 
       function : () => html`<div id="beacon" class="mx-auto bg-white" style="width:120px; height:120px;">
-      <img src="/assets/hourglass.gif" />
+       ${state.connecting ? html`<img src="/assets/hourglass.gif" />` 
+        : state.beaconImg }
       </div>`
     }
   }, 
@@ -411,8 +409,16 @@ arcadeMenu.on('insert-satoshi', () => {
 
 arcadeMenu.on('connect-moneysocket', connectMenu)
 arcadeMenu.on('connect-moneysocket', () => {
-  console.log('loop for beacon!')
-  loopForBeacon() 
+  if(!state.connected) {
+    console.log('loop for beacon!')
+    return loopForBeacon() 
+  }
+  if(state.buyerConnectedButNoSats) {
+    arcadeMenu(connectMenuConnected)
+  }
+  if(state.buyerAvailableSats ) {
+    arcadeMenu(connectMenuConnectedSatoshis)
+  }
 })
 
 arcadeMenu.on('back', startMenu)
