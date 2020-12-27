@@ -45,10 +45,11 @@ consumerStackTerminus.onstackevent = (layer_name, nexus, status)  => {
 
     let sellerBeaconForBuyerQr = qrCode( sellerBeaconForBuyer.toBech32Str())
   
+    //replace hourglass loading spinner with QR code: 
     $('#beacon').html(sellerBeaconForBuyerQr)
 
-    connectMenu[1].invisible = false 
-    connectMenu[2].activated.show = true  
+    connectMenu[2].invisible = false 
+    connectMenu[3].activated.show = true  
 
     arcadeMenu(connectMenu) 
     
@@ -67,8 +68,8 @@ consumerStackTerminus.onstackevent = (layer_name, nexus, status)  => {
     state.error = 'connection to seller lost'
     state.previouslyConnected = true 
     $('#beacon').remove()
-    connectMenu[1].invisible = true 
-    connectMenu[2].activated.show = false  
+    connectMenu[2].invisible = true 
+    connectMenu[3].activated.show = false  
     //show this err brierfly before starting the loop again:
     //todo: render err
     arcadeMenu(disconnectedMenu)
@@ -311,6 +312,13 @@ let connectMenu = [
     default : true, 
     classes : 'text-white my-5'
   },
+  {
+    name: { 
+      function : () => html`<div id="beacon" class="mx-auto bg-white" style="width:120px; height:120px;">
+      <img src="/assets/hourglass.gif" />
+      </div>`
+    }
+  }, 
   { 
     name: 'COPY BEACON',
     classes : 'mt-10 text-blue-200',
@@ -404,12 +412,6 @@ arcadeMenu.on('insert-satoshi', () => {
 arcadeMenu.on('connect-moneysocket', connectMenu)
 arcadeMenu.on('connect-moneysocket', () => {
   console.log('loop for beacon!')
-  //### make a spot for beacon ####
-  $('body').prepend(`
-    <div id="beacon" class="mx-auto bg-white" style="width:120px; height:120px;">
-      <img src="/assets/hourglass.gif" />
-    </div>
-  `)
   loopForBeacon() 
 })
 
@@ -420,7 +422,7 @@ arcadeMenu.on('back', () => {
 
 arcadeMenu.on('copy-beacon', () => {
   console.log('copy the beacon!!!')
-  connectMenu[1].activated.show = true 
+  connectMenu[2].activated.show = true 
   arcadeMenu(connectMenu)
   copy(state.beaconStr )
   console.log(state.beaconStr )

@@ -82,7 +82,7 @@ providerStack.onstackevent = (layer_name, nexus, status)  => {
 
     renderPage() 
 
-    //convert to a QR code ... TODO
+    //convert to a QR code: 
     let sellerBeaconForBuyerQr = qrCode( sellerBeaconForBuyer.toBech32Str())
   
     document.getElementById('beacon').appendChild(sellerBeaconForBuyerQr)
