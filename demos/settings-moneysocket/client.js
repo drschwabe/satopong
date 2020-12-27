@@ -65,9 +65,17 @@ consumerStackTerminus.onstackevent = (layer_name, nexus, status)  => {
     state.connected = false
     state.beaconReceived = false
     state.error = 'connection to seller lost'
+    state.previouslyConnected = true 
+    $('#beacon').remove()
+    connectMenu[1].invisible = true 
+    connectMenu[2].activated.show = false  
     //show this err brierfly before starting the loop again:
     //todo: render err
-    setTimeout( () => loopForBeacon, 2000)
+    arcadeMenu(disconnectedMenu)
+    setTimeout(() => {
+      arcadeMenu(connectMenu) 
+      loopForBeacon()
+    }, 2000)
   }
 }
 
@@ -85,7 +93,7 @@ consumerStackBuyer.onstackevent = (layer_name, nexus, status)  => {
   } else if(status === 'NEXUS_REVOKED' && state.buyerConnectedButNoSats) {
     delete state.buyerConnectedButNoSats
     state.error = 'connection to buyer lost'
-    console.log('buyerConnectedButNoSats' )
+    console.log('buyerConnectedButNoSats')
     console.log('connection to buyer lost')
     //todo: render error
   } else if(status === 'NEXUS_REVOKED' && state.buyerConnected) {
@@ -260,12 +268,13 @@ let startMenu = [
     }
   },
   {
-    name: 'INSERT SATOSHIS',
+    name: 'INSERT SATOSHI',
     disabled: () => state.buyerAvailableSats,
     classes: 'my-5',
     activated : { 
       merge : true,
-      hover : 'hv-yellow'
+      hover : 'hv-yellow',
+      href : '#arcadeMenu/insert-satoshi'
     }
   },
   {
@@ -315,14 +324,17 @@ let connectMenu = [
     }
   },
   {
-    name: 'connecting seller...',
+    name: {
+      function: () => html`connecting seller...
+      ${state.previouslyConnected ? html`<br><br><span style="color:#f1c0bd;">(lost previous connection)</span>` : ''}`
+    },
     classes: 'text-yellow-400',
     selectable : false, 
     activated : {
       merge : true, 
       style : 'color: #fffbc5ff;',
       name : html`awaiting buyer...<br>
-      <br><span class="muted">(connect a wallet)</span>`
+      <br><span class="muted">(connect a wallet by pasting beacon)</span>`
     }
   },
   {
@@ -371,10 +383,23 @@ connectMenuConnectedSatoshis.splice(1, 0, {
   classes : 'text-white text-4xl'
 })
 
+let disconnectedMenu = [
+  { 
+    name: html`lost seller moneysocket connection<br>
+    <br><span class="muted">re-attempting...</span>`,
+    classes: 'mt-10',
+    style : 'color: red;',
+    selectable : false
+  }
+]
 
 let arcadeMenu = require('../../mods/arcadeMenu')
 
 arcadeMenu( startMenu )
+
+arcadeMenu.on('insert-satoshi', () => {
+  console.log('insert satoshi')
+})
 
 arcadeMenu.on('connect-moneysocket', connectMenu)
 arcadeMenu.on('connect-moneysocket', () => {

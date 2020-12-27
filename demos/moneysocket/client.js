@@ -18,7 +18,7 @@ const undercoin = require('undercoin')
 $('body').html( '<div id="content" class="center"></div>')
 
 const state = {
-  connecting : true, 
+  connecting : true,
   connected : false,
   beaconReceived : false,
   buyerConnected : false
