@@ -38,11 +38,11 @@ consumerStackTerminus.onstackevent = (layer_name, nexus, status)  => {
     delete state.error
 
     //now create a new beacon to share with the buyer... 
-    let sellerBeaconForBuyer = generateNewBeacon() 
+    state.sellerBeaconForBuyer = generateNewBeacon() 
     
-    let beaconStr = sellerBeaconForBuyer.toString()
+    let beaconStr = state.sellerBeaconForBuyer.toString()
     state.beaconStr = beaconStr
-    state.beaconImg = qrCode( sellerBeaconForBuyer.toBech32Str())
+    state.beaconImg = qrCode( state.sellerBeaconForBuyer.toBech32Str())
   
     connectMenu[2].invisible = false 
     connectMenu[3].activated.show = true  
@@ -53,20 +53,28 @@ consumerStackTerminus.onstackevent = (layer_name, nexus, status)  => {
 
     setTimeout( () => {
       //now connect to the same beacon we just created, but with the consumer stack....
-      consumerStackBuyer.doConnect(  sellerBeaconForBuyer  )
+      consumerStackBuyer.doConnect(  state.sellerBeaconForBuyer  )
       
     }, 2000)
 
   }
   if(status === 'NEXUS_DESTROYED' || status === 'NEXUS_REVOKED') {
+    if(state.connecting) return 
+    //^ prevent running this more than once 
     state.connected = false
     state.beaconReceived = false
+    delete state.beaconImg
     state.error = 'connection to seller lost'
     state.previouslyConnected = true 
     connectMenu[2].invisible = true 
+    connectMenu[2].activated.show = false 
     connectMenu[3].activated.show = false  
+
+    //make sure both stacks disconnect so we they will restart cleanly: 
+    consumerStackTerminus.doDisconnect() 
+    consumerStackBuyer.doDisconnect() 
+    
     //show this err brierfly before starting the loop again:
-    //todo: render err
     arcadeMenu(disconnectedMenu)
     setTimeout(() => {
       arcadeMenu(connectMenu) 
@@ -86,18 +94,25 @@ consumerStackBuyer.onstackevent = (layer_name, nexus, status)  => {
       startMenu[4].activated.show = true
       arcadeMenu(connectMenuConnected)
     }
-  } else if(status === 'NEXUS_REVOKED' && layer_name !== 'OUTGOING_RENDEZVOUS') {
+  } else if(status === 'NEXUS_REVOKED' && layer_name !== 'OUTGOING_WEBSOCKET') {
     //^ checking layer name prevents the following status logic from running twice (since the same status gets broadcast but from OUTGOING_WEBSOCKET and OUTGOING_RENDEZVOUS)
+    if(state.connecting) return  //< prevent running more than once
     console.log('connection to buyer lost')
     state.error = 'connection to buyer lost'
     delete state.buyerConnectedButNoSats
     delete state.buyerAvailableSats
     connectMenu[2].activated.show = false 
+    startMenu[4].activated.show = false 
     if(state.buyerConnected) {
       state.buyerConnected = false
       state.error = 'connection to buyer lost (was connected OK)'
     }
     arcadeMenu(disconnectedMenu)
+
+    //make sure both stacks disconnect so we they will restart cleanly: 
+    consumerStackTerminus.doDisconnect() 
+    consumerStackBuyer.doDisconnect() 
+
     setTimeout(() => {
       window.location.hash = '' //< so the 'route' gets triggered again when 'copy beacon' is clicked; TODO - consider listening for link clicks instead of hash changes to remedy this dillemma ^ 
       arcadeMenu.fire('connect-moneysocket')
@@ -106,7 +121,7 @@ consumerStackBuyer.onstackevent = (layer_name, nexus, status)  => {
 }
 
 consumerStackBuyer.onproviderinfo = info => {
-  //console.log(info)
+  console.log(info)
   //we connected!  
   delete state.buyerConnectedButNoSats 
   state.buyerAvailableSats = undercoin.msat2sat( info.wad.msats )
@@ -181,7 +196,9 @@ const getBeacon = cb => {
 }
 
 //### initate the moneysocket stage ### 
-loopForBeacon = () => 
+loopForBeacon = () => {
+  if(state.looping) return  
+  state.looping = true 
   asyncJs.until(
     cb => cb(null, state.beaconReceived), 
     cb => 
@@ -189,8 +206,11 @@ loopForBeacon = () =>
         setTimeout(() => 
           cb(null, state.beaconReceived)
         , 3000)
-      )
-  ) 
+      ),
+    () => state.looping = false 
+  )
+}
+
 //(by calling this function; that will happen after user navigates into settings mneu)
 
 
@@ -314,7 +334,7 @@ let connectMenu = [
   {
     name: { 
       function : () => html`<div id="beacon" class="mx-auto bg-white" style="width:120px; height:120px;">
-       ${state.connecting ? html`<img src="/assets/hourglass.gif" />` 
+       ${state.connecting || !state.beaconImg ? html`<img src="/assets/hourglass.gif" />` 
         : state.beaconImg }
       </div>`
     }
@@ -414,7 +434,7 @@ arcadeMenu.on('insert-satoshi', () => {
 arcadeMenu.on('connect-moneysocket', connectMenu)
 arcadeMenu.on('connect-moneysocket', () => {
   if(!state.connected) {
-    console.log('loop for beacon!')
+    console.log('loop for beacon (if not already looping)!')
     return loopForBeacon() 
   } else if(state.buyerConnectedButNoSats) {
     return arcadeMenu(connectMenuConnected)
@@ -422,7 +442,7 @@ arcadeMenu.on('connect-moneysocket', () => {
   } else if(state.buyerAvailableSats ) {
     return arcadeMenu(connectMenuConnectedSatoshis)
   }
-  //consumerStackTerminus.doConnect( state.serverBeacon )
+  //else nothing to do
 })
 
 arcadeMenu.on('back', startMenu)
@@ -436,6 +456,18 @@ arcadeMenu.on('copy-beacon', () => {
   arcadeMenu(connectMenu)
   copy(state.beaconStr )
   console.log(state.beaconStr )
+})
+
+arcadeMenu.on('disconnect', () => {
+  console.log('disconnect from buyer')
+  startMenu[4].activated.show = false //< disable the 'MONEYSOCKET CONNECTED' in main menu.
+  
+  state.beaconReceived = false
+  delete state.beaconImg 
+  connectMenu[2].activated.show = false 
+  //disconnect terminus as well since otherwise for some reason we cannot reconnect to buyer: 
+  consumerStackTerminus.doDisconnect() 
+  consumerStackBuyer.doDisconnect() 
 })
 
 //reset hash URL on load: 
